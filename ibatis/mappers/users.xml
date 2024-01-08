@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+   PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+   "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+   
+<sqlMap namespace="users">
+<!-- 
+	id="insertUser"
+		이 SQL 구문의 식별자를 지정한다.
+	parameterClass="vo.User"
+		이 SQL 구문 실행에 필요한 값을 포함하고 있는 객체의 타입을 지정한다.
+		vo.User는 User객체에 값이 포함되어 ibatis에게 제공된다는 것이다.
+		아래와 같이 insert 메소드를 실행할 떄 식별자와 SQL구문에 필요한 정보가 포함된
+		User객체가 메소드의 인자로 전달된다.
+				public void insertUser(User user){
+					ibatis.insert("insertUser", user);
+				}
+	#id#, #password#, #name#, #email#, #tel#
+		User객체로 전달받은 사용자 정보(아이디, 비밀번호, 이름 등)를
+		치환할 위치와 해당 위치에 바인딩 될 값을  포함하고 있는 멤버변수명을 지정한다.
+		ibatis는 멤버변수명을참조해서 getter메소드를 실행해서 값을 가져와서 바인딩한다.
+ -->
+
+	<insert id="insertUser" parameterClass="vo.User">
+		insert into comm_users
+		(user_no, user_id, user_password, user_name, user_email, user_tel)
+		values
+		(users_seq.nextval, #id#,#password#,#name#,#email#,#tel#)
+		
+	</insert>
+	
+	<!-- 
+		id="getUserById"
+			이SQL 구문의 식별자를 지정한다.
+		parameterClass="string"
+			이SQL 구문실행에 필요한 값을 포함하는 객체를 지정한다.
+			string은 java.lang.String의 별칭이다.
+		resultClass="vo.User"
+			이SQL 구문의 실행결과를 저장할 객체의 타입을 지정한다.
+			ibatis는 User객체를 생성한다.
+					컬럼의 별칭과 동일한 이름의 멤버변수에 값을 저장한다.
+					값을 저장할 때는 setter 메소드를 사용한다.
+				
+			조회결과
+			==================================================================
+			no 		id 		password		 name 		email 			tel
+			==================================================================
+			1000   hong    xxxxxxxxxxxx   홍길동       hong@gmail.com 	.... 
+			==================================================================
+					
+		#value#
+			parameterClass의 타입이 
+				int, long, double, string과 같이 단순한 값인 경우
+				파라미터로 전달받은 값이 치환될 위치르 ㄹ지정할 때 사용된다.
+			parameterClass의 타입이 VO객체거나 Map인 경우는 사용 할 수 없다.
+				VO객체나 Map인 경우에는 각각 #멤버변수명# 혹은 #맵의Key#로 지정한다. 	
+	 -->
+	
+	<select id="getUserById" parameterClass="string" resultClass="vo.User">
+		select
+			user_no 			as no,
+			user_id 			as id,
+			user_password 		as password,
+			user_name 			as name,
+			user_email 			as email,
+			user_tel 			as tel,
+			user_deleted 		as deleted,
+			user_updated_date 	as updatedDate,
+			user_created_date 	as createdDate
+			
+		from 
+			comm_users
+		where 
+			user_id = #value#
+			
+	</select>
+	<select id="getUserByEmail" parameterClass="string" resultClass="vo.User">
+		select
+			user_no 			as no,
+			user_id 			as id,
+			user_password 		as password,
+			user_name 			as name,
+			user_email 			as email,
+			user_tel 			as tel,
+			user_deleted 		as deleted,
+			user_updated_date 	as updatedDate,
+			user_created_date 	as createdDate
+			
+		from 
+			comm_users
+		where 
+			user_email = #value#
+	
+	</select>
+	
+</sqlMap>

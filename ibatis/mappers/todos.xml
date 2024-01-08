@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+   PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+   "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+   
+<sqlMap namespace="todos">
+	<insert id="insertTodo" parameterClass="vo.Todo">
+			insert into comm_todos
+			(todo_no, category_no, todo_title, user_no, todo_expected_date, todo_content)
+			values
+			(todos_seq.nextval, #category.no#, #title#, #user.no#, #expectedDate#, #content#)	
+		</insert>
+		
+	<select id="getTotalRows" resultClass="int">
+		select
+			count(*)
+		from 
+			comm_todos
+		where 
+			todo_deleted = 'N'
+	</select>
+	
+	<select id="getTodos" parameterClass="map" resultClass="vo.Todo">
+		select  A.todo_no              			as"no",
+	        	A.category_no          			as"category.no",
+	       	 	B.category_name        			as"category.name",
+	        	A.todo_title           			as"title",
+	        	A.todo_expected_date			as"expectedDate",
+	        	A.todo_status					as"status",
+	        	A.todo_created_date				as"createdDate"
+		from (select 
+		        row_number()over (order by todo_no desc) num,
+		        todo_no,
+		        category_no,
+		        todo_title,
+		        todo_expected_date,
+		        todo_status,
+		        todo_created_date
+		    
+		from
+		    comm_todos
+		    
+		    where 
+		    todo_deleted = 'N') A, comm_todo_categories B
+		    
+		    where num between #begin# and #end#
+		and A.category_no = B.category_no
+		order by A.todo_no desc
+
+	
+	</select>
+</sqlMap>
